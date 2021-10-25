@@ -50,7 +50,7 @@ let orderFactory = (price, amount) => {
                 open: price * amount,
                 value: exchange.price * amount,
                 closed: closed,
-                percent: 100 - 100 / ((price * amount) / (exchange.price * amount)) *-1
+                percent: (100 - 100 / ((price * amount) / (exchange.price * amount))) *-1
             }
         },
         close: () => {
@@ -105,7 +105,7 @@ const trade = () => {
 
         if (exchange.delta - exchange.lastDelta > orderThreshold)
         {
-            let positionSize = exchange.delta / positionSizeFactor
+            let positionSize = exchange.delta * positionSizeFactor
             exchange.lastDelta = exchange.delta
             exchange.orders.push(orderFactory(
                 exchange.price,
