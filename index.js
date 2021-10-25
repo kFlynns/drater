@@ -1,28 +1,47 @@
 "use strict"
 
+const moment = require('moment')
 const axios = require('axios')
 const express = require('express')
 const app = express()
-app.set('view engine', 'pug')
-app.use(express.static('public'));
 
-let orders = []
-let lastDelta = 0.0
+/**
+ * exchange data
+ * @type {{
+ *   price: number,
+ *   bidSize: number,
+ *   delta: number,
+ *   orders: *[],
+ *   askSize: number,
+ *   lastDelta: number
+ * }}
+ */
+let exchange = {
+    price: 0.0,
+    bidSize: 0.0,
+    askSize: 0.0,
+    lastDelta: 0.0,
+    delta: 0.0,
+    orders: []
+}
+
 
 
 /**
- *
+ * create new orders
  * @param price
  * @param amount
  * @returns {{update: (function(*): {profit: number|*, value}), close: close}}
  */
 let orderFactory = (price, amount) => {
     let closed = false
+    let date = moment(Date.now()).format('DD.MM.YYYY HH:mm:ss')
     return {
-        update: actualPrice => {
+        update: () => {
             return {
+                date: date,
                 open: price * amount,
-                spend: actualPrice * amount,
+                value: exchange.price * amount,
                 closed: closed
             }
         },
@@ -38,23 +57,23 @@ let orderFactory = (price, amount) => {
  * @type {{print: (function(): void), update: purse.update}}
  */
 let purse = (function () {
-    let spend = 0.0;
+    let value = 0.0;
     let open = 0.0;
     return {
         print: () => {
             return {
-                spend: spend,
+                value: value,
                 open: open
             }
         },
-        update: price => {
-            spend = 0.0
+        update: () => {
+            value = 0.0
             open = 0.0
-            orders = orders.filter(order => {
-                let state = order.update(price)
-                spend += state.spend
+            exchange.orders = exchange.orders.filter(order => {
+                let state = order.update()
+                value += state.value
                 open += state.open
-                return true
+                return true // close orders at TP?
             })
         }
     }
@@ -66,32 +85,30 @@ let purse = (function () {
  *
  */
 const trade = () => {
-
     axios({
         url: "https://api-pub.bitfinex.com/v2/ticker/tBTCUSD",
-        method: "GET",
-        headers: {},
-        data: {}
+        method: "GET"
     }).then(response => {
 
-        let price = response.data[6]
-        let bidSize = response.data[1]
-        let askSize = response.data[3]
-        let delta = bidSize - askSize
+        exchange.price = response.data[6]
+        exchange.bidSize = response.data[1]
+        exchange.askSize = response.data[3]
+        exchange.delta = exchange.bidSize - exchange.askSize
 
-        if (delta - lastDelta > 1)
+        if (exchange.delta - exchange.lastDelta > 1)
         {
-            lastDelta = delta
-            orders.push(orderFactory(
-                price,
-                delta / 10000
+            let positionSize = exchange.delta / 10000
+            exchange.lastDelta = exchange.delta
+            exchange.orders.push(orderFactory(
+                exchange.price,
+                positionSize
             ))
-            console.log(`New order on ${price} ...`)
+            console.log(`New order on ${exchange.price} ...`)
         }
-        purse.update(price)
+        purse.update(exchange.price)
     })
-
 }
+
 setInterval(trade, 5000)
 trade()
 
@@ -101,7 +118,18 @@ app.get('/', (req, res) => {
     res.render('index')
 })
 
-app.post('/get', (req, res) => {
+app.post('/purse', (req, res) => {
     res.json(purse.print())
 })
+
+app.post('/orders', (req, res) => {
+    let result = []
+    exchange.orders.forEach(order => {
+        result.push(order.update())
+    })
+    res.json(result)
+})
+
+app.set('view engine', 'pug')
+app.use(express.static('public'))
 app.listen(8080)

@@ -5,6 +5,15 @@ html(lang='de')
         meta(charset="UTF-8")
         script(src='/jQuery.js')
         script(src='/drater.js')
+        link(rel='stylesheet', type="text/css", href="bootstrap.css")
     body
-        div(id="div-spend")
         div(id="div-open")
+        div(id="div-value")
+        table(id="tbl-orders", class="table")
+            thead
+                tr
+                    th(scope="column")= "time"
+                    th(scope="column")= "open"
+                    th(scope="column")= "value"
+                    th(scope="column")= "closed"
+            tbody
