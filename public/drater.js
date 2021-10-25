@@ -16,12 +16,13 @@
             url: '/orders',
             method: 'post',
         }).done(function (response) {
+            tblOrders.find('*').remove();
             $.each(response, function () {
-                tblOrders.find('*').remove();
                 var tr = $(`<tr>
                     <td>${this['date']}</td>
-                    <td>${this['open'].toFixed(4)}</td>
-                    <td>${this['value'].toFixed(4)}</td>
+                    <td class="text-right">${this['open'].toFixed(4)}</td>
+                    <td class="text-right">${this['value'].toFixed(4)}</td>
+                    <td class="text-right">${this['percent'].toFixed(4)}</td>
                     <td>${this['closed']}</td>
                 `);
                 tblOrders.append(tr);

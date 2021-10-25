@@ -5,6 +5,13 @@ const axios = require('axios')
 const express = require('express')
 const app = express()
 
+// step that will be used to buy in
+const orderThreshold = 1.0
+
+// factor an bid ask delta to create position size
+const positionSizeFactor = 0.001
+
+
 /**
  * exchange data
  * @type {{
@@ -42,7 +49,8 @@ let orderFactory = (price, amount) => {
                 date: date,
                 open: price * amount,
                 value: exchange.price * amount,
-                closed: closed
+                closed: closed,
+                percent: 100 - 100 / ((price * amount) / (exchange.price * amount)) *-1
             }
         },
         close: () => {
@@ -95,9 +103,9 @@ const trade = () => {
         exchange.askSize = response.data[3]
         exchange.delta = exchange.bidSize - exchange.askSize
 
-        if (exchange.delta - exchange.lastDelta > 1)
+        if (exchange.delta - exchange.lastDelta > orderThreshold)
         {
-            let positionSize = exchange.delta / 10000
+            let positionSize = exchange.delta / positionSizeFactor
             exchange.lastDelta = exchange.delta
             exchange.orders.push(orderFactory(
                 exchange.price,
