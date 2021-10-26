@@ -5,12 +5,14 @@ const axios = require('axios')
 const express = require('express')
 const app = express()
 
-// step that will be used to buy in
-const orderThreshold = 1.0
+// min delta that must be reached to trigger a buy
+const orderThreshold = 2.0
 
-// factor an bid ask delta to create position size
+// factor on bid ask delta to create position size
 const positionSizeFactor = 0.0001
 
+// step to the last course to buy in (buy the dip)
+const buyInThreshold = 10.0
 
 /**
  * exchange data
@@ -28,6 +30,7 @@ let exchange = {
     bidSize: 0.0,
     askSize: 0.0,
     delta: 0.0,
+    lastPrice: 0.0,
     orders: []
 }
 
@@ -40,20 +43,24 @@ let exchange = {
  * @returns {{update: (function(*): {profit: number|*, value}), close: close}}
  */
 let orderFactory = (price, amount) => {
+    let closePrice = 0.0
     let closed = false
     let date = moment(Date.now()).format('DD.MM.YYYY HH:mm:ss')
     return {
         update: () => {
             return {
+                price: price,
+                amount: amount,
                 date: date,
                 open: price * amount,
-                value: exchange.price * amount,
+                value: (closed ? closePrice : exchange.price) * amount,
                 closed: closed,
-                percent: (100 - 100 / ((price * amount) / (exchange.price * amount))) *-1
+                percent: (100 - 100 / ((price * amount) / ((closed ? closePrice : exchange.price) * amount))) *-1
             }
         },
         close: () => {
             closed = true
+            closePrice = exchange.price
         }
     }
 }
@@ -73,11 +80,15 @@ let purse = (function () {
                 open: open
             }
         },
-        update: () => {
+        update: close => {
             value = 0.0
             open = 0.0
             exchange.orders = exchange.orders.filter(order => {
                 let state = order.update()
+                if (close && state.percent > 1.0)
+                {
+                    order.close();
+                }
                 value += state.value
                 open += state.open
                 return true // close orders at TP?
@@ -101,18 +112,26 @@ const trade = () => {
         exchange.bidSize = response.data[1]
         exchange.askSize = response.data[3]
         exchange.delta = exchange.bidSize - exchange.askSize
+console.log(exchange.delta, exchange.lastPrice + buyInThreshold, exchange.price)
 
-        if (exchange.delta > orderThreshold)
-        {
+
+        if (
+            exchange.delta > orderThreshold &&
+            exchange.lastPrice + buyInThreshold <= exchange.price
+        ) {
             let positionSize = exchange.delta * positionSizeFactor
-            exchange.lastDelta = exchange.delta
             exchange.orders.push(orderFactory(
                 exchange.price,
                 positionSize
             ))
-            console.log(`New order on ${exchange.price} ...`)
+            exchange.lastPrice = exchange.price
+            console.log(`New order on ${exchange.price}, ${exchange.delta} ...`)
+            purse.update(false)
         }
-        purse.update(exchange.price)
+        else if(orderThreshold > exchange.delta)
+        {
+            purse.update(true)
+        }
     })
 }
 

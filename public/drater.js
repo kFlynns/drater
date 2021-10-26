@@ -20,6 +20,8 @@
             $.each(response, function () {
                 var tr = $(`<tr>
                     <td>${this['date']}</td>
+                    <td class="text-right">${this['price'].toFixed(4)}</td>
+                    <td class="text-right">${this['amount'].toFixed(4)}</td>
                     <td class="text-right">${this['open'].toFixed(4)}</td>
                     <td class="text-right">${this['value'].toFixed(4)}</td>
                     <td class="text-right">${this['percent'].toFixed(4)}</td>
