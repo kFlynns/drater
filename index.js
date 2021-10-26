@@ -112,12 +112,12 @@ const trade = () => {
         exchange.bidSize = response.data[1]
         exchange.askSize = response.data[3]
         exchange.delta = exchange.bidSize - exchange.askSize
-console.log(exchange.delta, exchange.lastPrice + buyInThreshold, exchange.price)
+console.log(exchange.delta, exchange.lastPrice - buyInThreshold, exchange.price)
 
 
         if (
             exchange.delta > orderThreshold &&
-            exchange.lastPrice + buyInThreshold <= exchange.price
+            exchange.lastPrice - buyInThreshold >= exchange.price
         ) {
             let positionSize = exchange.delta * positionSizeFactor
             exchange.orders.push(orderFactory(
