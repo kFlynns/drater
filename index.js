@@ -9,7 +9,7 @@ const app = express()
 const orderThreshold = 1.0
 
 // factor an bid ask delta to create position size
-const positionSizeFactor = 0.001
+const positionSizeFactor = 0.0001
 
 
 /**
@@ -27,7 +27,6 @@ let exchange = {
     price: 0.0,
     bidSize: 0.0,
     askSize: 0.0,
-    lastDelta: 0.0,
     delta: 0.0,
     orders: []
 }
@@ -103,7 +102,7 @@ const trade = () => {
         exchange.askSize = response.data[3]
         exchange.delta = exchange.bidSize - exchange.askSize
 
-        if (exchange.delta - exchange.lastDelta > orderThreshold)
+        if (exchange.delta > orderThreshold)
         {
             let positionSize = exchange.delta * positionSizeFactor
             exchange.lastDelta = exchange.delta
