@@ -2,44 +2,58 @@
 
     var update = function () {
         $.ajax({
-            url: '/purse',
-            method: 'post',
+            url: '/info',
+            method: 'get',
             data: {
                 nc: Date.now()
             }
         }).done(function (response) {
-            divOpen.text(response.open.toFixed(4))
-            divValue.text(response.value.toFixed(4))
-        });
 
-        $.ajax({
-            url: '/orders',
-            method: 'post',
-        }).done(function (response) {
+
+            $('td#td-start-balance').text(response.startBalance.toFixed(4));
+            $('td#td-balance').text(response.balanceUsd.toFixed(4));
+            $('td#td-value').text(response.value.toFixed(4));
+            $('td#td-summary').text(
+                (response.value + response.balanceUsd).toFixed(4)
+            );
+            $('td#td-change').text(response.change.toFixed(4));
+
+
+
+
             tblOrders.find('*').remove();
-            $.each(response, function () {
+            $.each(response.orders, function () {
                 var tr = $(`<tr>
-                    <td>${this['date']}</td>
-                    <td class="text-right">${this['price'].toFixed(4)}</td>
-                    <td class="text-right">${this['amount'].toFixed(4)}</td>
-                    <td class="text-right">${this['open'].toFixed(4)}</td>
-                    <td class="text-right">${this['value'].toFixed(4)}</td>
-                    <td class="text-right">${this['percent'].toFixed(4)}</td>
-                    <td>${this['closed']}</td>
+                    <td>
+                        ${this['date']}
+                    </td>
+                    <td class="text-right">
+                        ${this['_openPrice'].toFixed(4)}
+                    </td>
+                    <td class="text-right">
+                        ${this['_amount'].toFixed(4)}
+                    </td>
+                    <td class="text-right">
+                        ${this['_openValue'].toFixed(4)}
+                    </td>
+                    <td class="text-right">
+                        ${this['_value'].toFixed(4)}
+                    </td>
+                    <td class="text-right">
+                        ${this['_change'].toFixed(4)}
+                    </td>
                 `);
                 tblOrders.append(tr);
             });
         });
 
+
     };
 
-    var divOpen;
-    var divValue;
+
     var tblOrders;
 
     $(document).ready(function() {
-        divOpen = $('div#div-open');
-        divValue = $('div#div-value');
         tblOrders = $('table#tbl-orders tbody');
         setInterval(
             update,
