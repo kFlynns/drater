@@ -20,6 +20,10 @@ class Broker
         });
     }
 
+    static get course()
+    {
+        return this._price
+    }
 
 }
 

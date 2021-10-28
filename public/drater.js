@@ -9,7 +9,7 @@
             }
         }).done(function (response) {
 
-
+            $('td#td-course').text(response.course.toFixed(4));
             $('td#td-start-balance').text(response.startBalance.toFixed(4));
             $('td#td-balance').text(response.balanceUsd.toFixed(4));
             $('td#td-value').text(response.value.toFixed(4));
@@ -24,8 +24,14 @@
                     <td>
                         ${this['_time']}
                     </td>
+                    <td>
+                        ${this['_type'] === 1 ? 'LONG' : 'SHORT'}
+                    </td>
                     <td class="text-right">
                         ${this['_openPrice'].toFixed(4)}
+                    </td>
+                    <td class="text-right">
+                        ${this['_tp'].toFixed(4)}
                     </td>
                     <td class="text-right">
                         ${this['_amount'].toFixed(4)}
@@ -54,7 +60,7 @@
         tblOrders = $('table#tbl-orders tbody');
         setInterval(
             update,
-            5000
+            2500
         );
         update();
     });

@@ -21,7 +21,7 @@ const trade = () => {
     Broker.update(Trader.trade)
 }
 trade()
-setInterval(trade, 5000)
+setInterval(trade, 2500)
 
 
 
@@ -34,6 +34,7 @@ app.get('/info', (req, res) => {
     let value = OrderList.value
 
     res.json({
+        course: Broker.course,
         startBalance: startBalance,
         balanceUsd: Purse.balanceUsd,
         orders: OrderList.search(),

@@ -4,7 +4,7 @@ html(lang='de')
         title= "Darth Trader"
         meta(charset="UTF-8")
         script(src='/jQuery.js')
-        script(src='/drater.js?v=1')
+        script(src='/drater.js?v=2')
         link(rel='stylesheet', type="text/css", href="/bootstrap.css")
         link(rel='stylesheet', type="text/css", href="/font.css")
         link(rel='stylesheet', type="text/css", href="/drater.css")
@@ -12,6 +12,10 @@ html(lang='de')
         h1= "Darth Trader"
         p(class="pb-4")= "© ACAB - anti `capitalism asshole badgers`, corp."
         table(class="table p-4")
+            tr
+                th(scope="row", style="width: 160px")= "course"
+                td(id="td-course", style="width: 140px", class="text-right")
+                td= "$ / BTC"
             tr
                 th(scope="row", style="width: 160px")= "start balance"
                 td(id="td-start-balance", style="width: 140px", class="text-right")
@@ -37,7 +41,9 @@ html(lang='de')
             thead
                 tr
                     th(scope="column")= "time"
+                    th(scope="column")= "type"
                     th(scope="column", class="text-right")= "price"
+                    th(scope="column", class="text-right")= "tp"
                     th(scope="column", class="text-right")= "amount"
                     th(scope="column", class="text-right")= "open"
                     th(scope="column", class="text-right")= "value"

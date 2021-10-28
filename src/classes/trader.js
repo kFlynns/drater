@@ -4,31 +4,80 @@ const Order = require("./order");
 class Trader
 {
 
-    static trade(price, bidSize, askSize)
+
+    static calculateMomentum(price)
+    {
+
+        let history = Trader._priceHistory
+        history.push(price)
+
+        if (history.length === 6)
+        {
+            history.splice(0, 1)
+        }
+
+        let direction = 0
+        let lastDirection = false
+        let momentum = 0
+
+        for (let i = history.length - 1;  i > 0; i--)
+        {
+
+            let velocity = history[i - 1] - history[i]
+            if (velocity === 0)
+            {
+                // there was no movement
+                continue
+            }
+
+            // > 0: up, < 0: down
+            direction = (velocity / Math.abs(velocity)) * -1
+
+            if (!(lastDirection === false || direction === lastDirection ))
+            {
+                // direction has changed
+                continue
+            }
+            momentum += velocity * -1
+            lastDirection = direction
+
+        }
+        return 100 / price * momentum
+
+    }
+
+
+
+    static trade(price)
     {
 
         OrderList.update(price)
-        let delta = bidSize - askSize
-
-        // do nothing if threshold was not reached
-        if (delta < Trader._orderThreshold)
+        let momentum = Trader.calculateMomentum(price)
+        console.log(momentum)
+        if (Math.abs(momentum) >= 0.01)
         {
-            return
-        }
-
-        // don't buy in to the last price
-        if (Math.abs(Trader._lastBuyingPrice - price) <= 10)
-        {
-            return
-        }
-
-        if (
-            OrderList.averagePrice === false ||
-            price < OrderList.averagePrice - 10
-        ) {
-            Trader._lastBuyingPrice = price
-            new Order(price, delta * 0.0001)
-            console.log(`Opened new order at ${price}...`)
+            if (momentum < 0)
+            {
+                // momentum points in short, open buy order
+                let order = new Order(
+                    price,
+                    momentum / 20 * -1,
+                    Order.TYPE_LONG
+                )
+                order.tp = price * (1 + momentum * -1 / 100)
+                console.log(`Opened new order at ${price}, tp ${order.tp}...`)
+                Trader._priceHistory = []
+                return
+            }
+            // open sell order
+            let order = new Order(
+                price,
+                momentum / 20,
+                Order.TYPE_SHORT
+            )
+            order.tp = price * (1 + momentum * -1 / 100)
+            console.log(`Opened new order at ${price}, tp ${order.tp}...`)
+            Trader._priceHistory = []
         }
     }
 }
@@ -38,5 +87,6 @@ class Trader
  */
 Trader._orderThreshold = 5.0
 Trader._lastBuyingPrice = 0.0
+Trader._priceHistory = []
 
 module.exports = Trader
