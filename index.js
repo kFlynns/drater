@@ -6,7 +6,7 @@ const express = require('express')
 const app = express()
 
 
-const startBalance = 1000
+const startBalance = 10000.0
 
 /**
  * Set initial balance.
