@@ -18,14 +18,11 @@
             );
             $('td#td-change').text(response.change.toFixed(4));
 
-
-
-
             tblOrders.find('*').remove();
             $.each(response.orders, function () {
                 var tr = $(`<tr>
                     <td>
-                        ${this['date']}
+                        ${this['_time']}
                     </td>
                     <td class="text-right">
                         ${this['_openPrice'].toFixed(4)}

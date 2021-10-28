@@ -1,10 +1,12 @@
 const OrderList = require('./orderList')
 const Purse = require('./purse')
+const moment = require("moment");
 
 class Order
 {
 
     constructor(price, amount) {
+        this._time = moment(Date.now()).format("DD.MM.YYYY HH:mm:ss")
         this._openPrice = price
         this._amount = amount
         this._value = price * amount

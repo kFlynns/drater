@@ -36,7 +36,7 @@ class Trader
 /**
  * Min delta that must be reached to trigger a buy.
  */
-Trader._orderThreshold = 10.0
+Trader._orderThreshold = 5.0
 Trader._lastBuyingPrice = 0.0
 
 module.exports = Trader
