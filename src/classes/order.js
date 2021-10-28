@@ -6,7 +6,7 @@ class Order
 {
 
     constructor(price, amount) {
-        this._time = moment(Date.now()).format("DD.MM.YYYY HH:mm:ss")
+        this._time = moment(Date.now()).format("DD.MM.YYYY HH:mm")
         this._openPrice = price
         this._amount = amount
         this._value = price * amount
