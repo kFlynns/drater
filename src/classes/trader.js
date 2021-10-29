@@ -65,7 +65,6 @@ class Trader
                     Order.TYPE_LONG
                 )
                 order.tp = price * (1 + momentum * -1 / 100)
-                console.log(`Opened new order at ${price}, tp ${order.tp}...`)
                 Trader._priceHistory = []
                 return
             }
@@ -76,7 +75,6 @@ class Trader
                 Order.TYPE_SHORT
             )
             order.tp = price * (1 + momentum * -1 / 100)
-            console.log(`Opened new order at ${price}, tp ${order.tp}...`)
             Trader._priceHistory = []
         }
     }

@@ -16,21 +16,31 @@ class Order
         this._listPosition = OrderList.add(this)
         this._tp = false
         Purse.spend(this._value)
+        console.log(`Opened new ${type === Order.TYPE_LONG ? 'long' : 'short'} order at ${price}...`)
     }
 
     update(price)
     {
-        this._value = price * this._amount
-        this._change = (100.0 - (100 / this._openValue * this._value)) * (this._type === Order.TYPE_LONG ? -1 : 1)
-        if (this._tp !== false && this._value.toFixed(1) === price.toFixed(1))
-        {
+        let profit =
+            (this._openValue - (price * this._amount)) *
+            (this._type === Order.TYPE_LONG ? -1 : 1)
+
+        this._value = this._openValue + profit
+        this._change = (100.0 - (100 / this._openValue * this._value)) * -1
+        if (
+            this._tp !== false && (
+                this._type === Order.TYPE_LONG  && price >= this._tp ||
+                this._type === Order.TYPE_SHORT && price <= this._tp
+            )
+        ) {
+            console.log(`Take profit ${profit} $ at ${price}...`)
             this.close()
         }
     }
 
     close()
     {
-        Purse.retain(this._value * (this._type === Order.TYPE_LONG ? 1 : -1))
+        Purse.retain(this._value)
         OrderList.remove(this._listPosition)
     }
 
