@@ -85,7 +85,7 @@ class Trader
                     price,
                     momentum / 10 * -1,
                     Order.TYPE_LONG,
-                    price * (1 + momentum * -1 / 100),
+                    price * (1 + momentum * -1 / 50),
                     false // we're bullish in btc, so no sl for long positions
                 )
                 return
