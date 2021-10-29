@@ -52,7 +52,14 @@ class Trader
     }
 
 
-
+    /**
+     * open new order
+     * @param {float} price
+     * @param {float} amount
+     * @param {int} type
+     * @param {float} tp
+     * @param {float} sl
+     */
     static openOrder(price, amount, type, tp, sl)
     {
         // more money in purse -> higher risk
