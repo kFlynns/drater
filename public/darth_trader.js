@@ -69,7 +69,7 @@
                         <td class="text-right">
                             ${this['_value'].toFixed(4)}
                         </td>
-                        <td class="text-right">
+                        <td class="text-right" style="color: #${this['_change'] > 0 ? '00cc00' : 'cc0000'}">
                             ${this['_change'].toFixed(4)}
                         </td>
                     </tr>

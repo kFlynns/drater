@@ -83,7 +83,7 @@ class Trader
                 // momentum points in short, open buy order
                 Trader.openOrder(
                     price,
-                    momentum / 20 * -1,
+                    momentum / 10 * -1,
                     Order.TYPE_LONG,
                     price * (1 + momentum * -1 / 100),
                     false // we're bullish in btc, so no sl for long positions
@@ -93,10 +93,10 @@ class Trader
             // open sell order
             Trader.openOrder(
                 price,
-                momentum / 20,
+                momentum / 10,
                 Order.TYPE_SHORT,
                 price * (1 + momentum * -1 / 100),
-                price * (1 - (momentum * -4) / 100) // risk four times the reward
+                price * (1 - (momentum * -10) / 100) // risk ten times the reward
             )
         }
     }
