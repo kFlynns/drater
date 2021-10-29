@@ -1,5 +1,6 @@
 const OrderList = require("./orderList");
 const Order = require("./order");
+const Purse = require("./purse")
 
 class Trader
 {
@@ -54,9 +55,11 @@ class Trader
 
     static openOrder(price, amount, type, tp, sl)
     {
+        // more money in purse -> higher risk
+        let purseFactor = Purse.balanceUsd / 10000
         let order = new Order(
             price,
-            amount,
+            amount * purseFactor,
             type
         )
         order.tp = tp
