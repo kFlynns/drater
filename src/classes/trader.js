@@ -40,7 +40,7 @@ class Trader
             if (!(lastDirection === false || direction === lastDirection ))
             {
                 // direction has changed
-                continue
+                return 0.0
             }
             momentum += velocity * -1
             lastDirection = direction
