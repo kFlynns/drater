@@ -8,38 +8,28 @@ class OrderList
 
     static remove(listPosition)
     {
-        OrderList._list[listPosition] = null
+        delete OrderList._list[listPosition]
         OrderList._list.splice(listPosition, 1)
     }
 
     static update(price)
     {
-        this._list.forEach(order => order.update(price))
+        OrderList._value = 0.0
+        OrderList._list = OrderList._list.filter(order => {
+            if (order.update(price))
+            {
+                OrderList._value += order.value
+                return true
+            }
+            return false
+        })
     }
 
     static get value()
     {
-        let value = 0.0
-        OrderList._list.forEach(order => {
-            value += order.value
-        })
-        return value
+        return OrderList._value
     }
 
-    static get averagePrice()
-    {
-        if (OrderList._list.length === 0)
-        {
-            return false
-        }
-        let length = 0
-        let summary = 0.0
-        OrderList._list.forEach(order => {
-            summary += order.openPrice
-            length++
-        })
-        return summary / length
-    }
 
     static search(criteria)
     {
@@ -62,5 +52,6 @@ class OrderList
 
 }
 
+OrderList._value = 0.0
 OrderList._list = []
 module.exports = OrderList

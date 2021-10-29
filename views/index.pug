@@ -10,7 +10,6 @@ html(lang='de')
         link(rel='stylesheet', type="text/css", href="/drater.css")
     body(class="p-2 p-lg-4")
         h1= "Darth Trader"
-        p(class="pb-4")= "© ACAB - anti `capitalistic asshole badgers`, corp."
         table(class="table p-4")
             tr
                 th(scope="row", style="width: 160px")= "course"
@@ -40,6 +39,7 @@ html(lang='de')
         table(id="tbl-orders", class="table")
             thead
                 tr
+                    th(scope="column")= "id"
                     th(scope="column")= "time"
                     th(scope="column")= "type"
                     th(scope="column", class="text-right")= "price"

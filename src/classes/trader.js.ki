@@ -1,0 +1,26 @@
+const OrderList = require("./orderList");
+const Order = require("./order");
+const {Layer,Network } = require("synaptic");
+
+
+class Trader
+{
+
+    static setup()
+    {
+        let inputLayer = new Layer(2);
+        let hiddenLayer = new Layer(3);
+        let outputLayer = new Layer(1);
+        Trader._network = new Network({
+            input: inputLayer,
+            hidden: [hiddenLayer],
+            output: outputLayer
+        });
+    }
+
+
+    static trade(price)
+    {
+
+    }
+}

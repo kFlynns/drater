@@ -1,6 +1,7 @@
 const OrderList = require('./orderList')
 const Purse = require('./purse')
 const moment = require("moment");
+const crypto = require('crypto')
 
 class Order
 {
@@ -13,10 +14,13 @@ class Order
         this._openValue = this._value
         this._change = 0.0
         this._type = type
-        this._listPosition = OrderList.add(this)
         this._tp = false
+        this._id = crypto
+            .randomBytes(4)
+            .toString('hex')
         Purse.spend(this._value)
-        console.log(`Opened new ${type === Order.TYPE_LONG ? 'long' : 'short'} order at ${price}...`)
+        console.log(`Opened new ${type === Order.TYPE_LONG ? 'long' : 'short'} (${this._id}) order at ${price}...`)
+        OrderList.add(this)
     }
 
     update(price)
@@ -33,15 +37,16 @@ class Order
                 this._type === Order.TYPE_SHORT && price <= this._tp
             )
         ) {
-            console.log(`Take profit ${profit} $ at ${price}...`)
+            console.log(`Take profit ${profit} for ${this._id} at ${price}...`)
             this.close()
+            return false
         }
+        return true
     }
 
     close()
     {
         Purse.retain(this._value)
-        OrderList.remove(this._listPosition)
     }
 
     set tp(takeProfit)

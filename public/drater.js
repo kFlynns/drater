@@ -21,6 +21,7 @@
             tblOrders.find('*').remove();
             $.each(response.orders, function () {
                 var tr = $(`<tr>
+                    <td>${this['_id']}</td>
                     <td>
                         ${this['_time']}
                     </td>
