@@ -8,6 +8,7 @@ class OrderList
 
     static remove(listPosition)
     {
+        OrderList._list[listPosition] = null
         OrderList._list.splice(listPosition, 1)
     }
 
