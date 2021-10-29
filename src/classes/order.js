@@ -6,6 +6,12 @@ const crypto = require('crypto')
 class Order
 {
 
+    /**
+     * Create an order.
+     * @param {float} price
+     * @param {float} amount
+     * @param {int} type
+     */
     constructor(price, amount, type) {
         this._time = moment(Date.now()).format("DD.MM.YYYY HH:mm")
         this._openPrice = price
@@ -15,65 +21,114 @@ class Order
         this._change = 0.0
         this._type = type
         this._tp = false
+        this._sl = false
+        this._profit = 0.0
         this._id = crypto
             .randomBytes(4)
             .toString('hex')
         Purse.spend(this._value)
-        console.log(`Opened new ${type === Order.TYPE_LONG ? 'long' : 'short'} (${this._id}) order at ${price}...`)
+        console.log(`Opened new ${type === Order.TYPE_LONG ? 'long' : 'short'} order ${this._id} at ${price}...`)
         OrderList.add(this)
     }
 
+    /**
+     * Update order by actual course, return false if order get closed.
+     * @param {float} price
+     * @returns {boolean}
+     */
     update(price)
     {
-        let profit =
+        this._profit =
             (this._openValue - (price * this._amount)) *
             (this._type === Order.TYPE_LONG ? -1 : 1)
 
-        this._value = this._openValue + profit
+        this._value = this._openValue + this._profit
         this._change = (100.0 - (100 / this._openValue * this._value)) * -1
+
+        // close on tp
         if (
             this._tp !== false && (
                 this._type === Order.TYPE_LONG  && price >= this._tp ||
                 this._type === Order.TYPE_SHORT && price <= this._tp
             )
         ) {
-            console.log(`Take profit ${profit} for ${this._id} at ${price}...`)
+            console.log(`Take profit ${this._profit} for ${this._id} at ${price}...`)
             this.close()
             return false
         }
+
+        // close on sl
+        if (
+            this._sl !== false && (
+                this._type === Order.TYPE_LONG  && price <= this._sl ||
+                this._type === Order.TYPE_SHORT && price >= this._sl
+            )
+        ) {
+            console.log(`Stop loss ${this._profit} for ${this._id} at ${price}...`)
+            this.close()
+            return false
+        }
+
         return true
     }
 
+    /**
+     * Close order and retain money in purse.
+     */
     close()
     {
         Purse.retain(this._value)
     }
 
+    /**
+     * Set TP.
+     * @param {float} takeProfit
+     */
     set tp(takeProfit)
     {
         this._tp = takeProfit
     }
 
+    /**
+     * Get TP.
+     * @returns {boolean|float}
+     */
     get tp()
     {
         return this._tp
     }
 
-    get openPrice()
+    /**
+     * Set SL.
+     * @param {float} stopLoss
+     */
+    set sl(stopLoss)
     {
-        return this._openPrice
+        this._sl = stopLoss
     }
 
+    /**
+     * Get SL.
+     * @returns {boolean|float}
+     */
+    get sl()
+    {
+        return this._sl
+    }
+
+    /**
+     * Get actual value.
+     * @returns {float}
+     */
     get value()
     {
         return this._value
     }
 
-    get amount()
-    {
-        return this._amount
-    }
-
+    /**
+     * Get percentual change.
+     * @returns {number}
+     */
     get change()
     {
         return this._change
@@ -82,6 +137,20 @@ class Order
 
 }
 
+/**
+ *
+ * @type {number}
+ */
 Order.TYPE_SHORT = 0
+
+/**
+ *
+ * @type {number}
+ */
 Order.TYPE_LONG =  1
+
+/**
+ *
+ * @type {Order}
+ */
 module.exports = Order

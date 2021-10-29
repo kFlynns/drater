@@ -30,9 +30,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-
     let value = OrderList.value
-
     res.json({
         course: Broker.course,
         startBalance: startBalance,
@@ -42,11 +40,11 @@ app.get('/info', (req, res) => {
         value: value,
         change: (100 - (100 / startBalance * (Purse.balanceUsd + value))) * -1
     })
-
 })
 
-app.post('/orders', (req, res) => {
-    res.json()
+
+app.get('/history', (req, res) => {
+    res.json(OrderList.history)
 })
 
 app.set('view engine', 'pug')

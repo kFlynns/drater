@@ -3,6 +3,10 @@ const axios = require("axios");
 class Broker
 {
 
+    /**
+     * Update state from broker.
+     * @param {function} callback
+     */
     static update(callback)
     {
         axios({
@@ -20,6 +24,10 @@ class Broker
         });
     }
 
+    /**
+     *
+     * @returns {float}
+     */
     static get course()
     {
         return this._price
@@ -27,4 +35,8 @@ class Broker
 
 }
 
+/**
+ *
+ * @type {Broker}
+ */
 module.exports = Broker

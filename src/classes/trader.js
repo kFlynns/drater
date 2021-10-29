@@ -4,7 +4,11 @@ const Order = require("./order");
 class Trader
 {
 
-
+    /**
+     * Calculate momentum of course movement
+     * @param {float} price
+     * @returns {number}
+     */
     static calculateMomentum(price)
     {
 
@@ -48,43 +52,55 @@ class Trader
 
 
 
+    static openOrder(price, amount, type, tp, sl)
+    {
+        let order = new Order(
+            price,
+            amount,
+            type
+        )
+        order.tp = tp
+        order.sl = sl
+        Trader._priceHistory = []
+    }
+
+
+    /**
+     * Main method for trading.
+     * @param {float} price
+     */
     static trade(price)
     {
 
         OrderList.update(price)
         let momentum = Trader.calculateMomentum(price)
-        console.log(momentum)
-        if (Math.abs(momentum) >= 0.01)
+
+        // use a moderate momentum as trigger
+        if (Math.abs(momentum) >= 0.02 && Math.abs(momentum) <= 0.1)
         {
             if (momentum < 0)
             {
                 // momentum points in short, open buy order
-                let order = new Order(
+                Trader.openOrder(
                     price,
                     momentum / 20 * -1,
-                    Order.TYPE_LONG
+                    Order.TYPE_LONG,
+                    price * (1 + momentum * -1 / 100),
+                    false // we're bullish in btc, so no sl for long positions
                 )
-                order.tp = price * (1 + momentum * -1 / 100)
-                Trader._priceHistory = []
                 return
             }
             // open sell order
-            let order = new Order(
+            Trader.openOrder(
                 price,
                 momentum / 20,
-                Order.TYPE_SHORT
+                Order.TYPE_SHORT,
+                price * (1 + momentum * -1 / 100),
+                price * (1 - (momentum * -4) / 100) // risk four times the reward
             )
-            order.tp = price * (1 + momentum * -1 / 100)
-            Trader._priceHistory = []
         }
     }
 }
 
-/**
- * Min delta that must be reached to trigger a buy.
- */
-Trader._orderThreshold = 5.0
-Trader._lastBuyingPrice = 0.0
 Trader._priceHistory = []
-
 module.exports = Trader
