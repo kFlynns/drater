@@ -4,10 +4,39 @@ class Broker
 {
 
     /**
+     *
+     * @param {float} takerFee
+     * @param {float} makerFee
+     */
+    constructor(takerFee, makerFee) {
+        this._takerFee = takerFee
+        this._makerFee = makerFee
+    }
+
+
+    /**
+     * Fee on open.
+     * @returns {float}
+     */
+    get makerFee()
+    {
+        return this._makerFee
+    }
+
+    /**
+     * Fee on close.
+     * @returns {float}
+     */
+    get takerFee()
+    {
+        return this._takerFee
+    }
+
+    /**
      * Update state from broker.
      * @param {function} callback
      */
-    static update(callback)
+    update(callback)
     {
         axios({
             url: "https://api-pub.bitfinex.com/v2/ticker/tBTCUSD",
@@ -19,16 +48,36 @@ class Broker
             callback(
                 this._price,
                 this._bidSize,
-                this._askSize
+                this._askSize,
+                this._makerFee,
+                this._takerFee
             )
         });
     }
 
     /**
-     *
+     * Get course including maker fee.
      * @returns {float}
      */
-    static get course()
+    get makerCourse()
+    {
+        return this._price * (1 + this._price * this._makerFee)
+    }
+
+    /**
+     * Get course including taker fee.
+     * @returns {float}
+     */
+    get takerCourse()
+    {
+        return this._price * (1 + this._price * this._takerFee)
+    }
+
+    /**
+     * Get course without fees.
+     * @returns {float}
+     */
+    get course()
     {
         return this._price
     }

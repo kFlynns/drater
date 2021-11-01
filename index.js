@@ -1,35 +1,58 @@
+/**
+ * todo:
+ *  - calculate risk to evaluate needed capital (max draw down 70 %)
+ *  - convert reward to gross reward
+ *      - tax 25 % on reward (germany)
+ *   - fees (Bitfinex)
+ *      - open 0.1 %
+ *      - close 0.2 %
+ *  - simulate events for testing
+ *      - noise (extreme volatility)
+ *      - linear increase / decrease (rally / crash)
+ */
+
 const Broker = require('./src/classes/broker')
 const Trader = require('./src/classes/trader')
 const OrderList = require('./src/classes/orderList')
 const Purse = require('./src/classes/purse')
-const express = require('express')
-const app = express()
+const Express = require('express')
+const App = Express()
+const Config = require('./src/modules/config')
 
-
-const startBalance = 10000.0
 
 /**
  * Set initial balance.
  * @type {number}
  */
-Purse.balanceUsd = startBalance;
+Purse.balanceUsd = Config.startBalance;
+
+
+/**
+ * Bitfinex Broker inc. fees.
+ */
+const broker = new Broker(
+    Config.broker.fees.maker,
+    Config.broker.fees.taker
+);
+
+
 
 /**
  * Main thread.
  */
 const trade = () => {
-    Broker.update(Trader.trade)
+    broker.update(Trader.trade)
 }
 trade()
 setInterval(trade, 2500)
 
 
 
-app.get('/', (req, res) => {
+App.get('/', (req, res) => {
     res.render('index')
 })
 
-app.get('/info', (req, res) => {
+App.get('/info', (req, res) => {
     let value = OrderList.value
     res.json({
         course: Broker.course,
@@ -43,10 +66,10 @@ app.get('/info', (req, res) => {
 })
 
 
-app.get('/history', (req, res) => {
+App.get('/history', (req, res) => {
     res.json(OrderList.history)
 })
 
-app.set('view engine', 'pug')
-app.use(express.static('public'))
-app.listen(8080)
+App.set('view engine', 'pug')
+App.use(Express.static('public'))
+App.listen(8080)
