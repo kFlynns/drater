@@ -38,6 +38,7 @@ class Db
             database: database,
             connectionLimit: 5
         })
+        // todo: switch argument to make this optional
         this.initialize()
     }
 
@@ -85,6 +86,7 @@ class Db
                         ]]
                     )
                     await connection.commit()
+
                 })
             }
             catch (err)
@@ -92,7 +94,10 @@ class Db
                 console.log(err)
                 await connection.rollback()
             }
+            connection.end()
+
         })
+        
     }
 
 

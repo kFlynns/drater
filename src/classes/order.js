@@ -70,7 +70,7 @@ class Order
                 console.log(err)
                 await connection.rollback()
             }
-
+            connection.end()
 
         })
     }
