@@ -1,8 +1,6 @@
-const OrderList = require("./orderList");
+const OrderList = require("./orderList")
 const Order = require("./order");
 const Purse = require("./purse")
-const Db = require('./db')
-const moment = require("moment");
 
 
 class Trader
@@ -76,30 +74,6 @@ class Trader
         order.sl = sl
         Trader._priceHistory = []
 
-        Db.getConnection(connection => {
-            connection.query(`INSERT INTO trades (
-                amount,
-                maker_fee,
-                taker_fee,
-                open_course,
-                open_time,
-                type
-            ) VALUES (
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?
-            )`, [
-                amount,
-                Trader._makerFee,
-                Trader._takerFee,
-                price,
-                moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
-                type === Order.TYPE_SHORT ? 'SHORT' : 'LONG'
-            ])
-        })
     }
 
 
@@ -108,14 +82,9 @@ class Trader
      * @param {float} price
      * @param {float} bidSize
      * @param {float} askSize
-     * @param {float} makerFee
-     * @param {float} takerFee
      */
-    static trade(price, bidSize, askSize, makerFee, takerFee)
+    static trade(price, bidSize, askSize)
     {
-
-        Trader._makerFee = makerFee
-        Trader._takerFee = takerFee
 
         OrderList.update(price)
         let momentum = Trader.calculateMomentum(price)

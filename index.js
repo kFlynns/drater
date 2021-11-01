@@ -22,28 +22,22 @@ const Config = require('./src/modules/config')
 
 /**
  * Set initial balance.
- * @type {number}
  */
 Purse.balanceUsd = Config.startBalance;
-
 
 /**
  * Bitfinex Broker inc. fees.
  */
-const broker = new Broker(
-    Config.broker.fees.maker,
-    Config.broker.fees.taker
-);
-
+Broker.makerFee = Config.broker.fees.maker
+Broker.takerFee = Config.broker.fees.taker
 
 
 /**
  * Main thread.
  */
 const trade = () => {
-    broker.update(Trader.trade)
+    Broker.update(Trader.trade)
 }
-trade()
 setInterval(trade, 2500)
 
 

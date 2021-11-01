@@ -4,53 +4,58 @@ class Broker
 {
 
     /**
-     *
-     * @param {float} takerFee
-     * @param {float} makerFee
+     * Set maker fee.
+     * @param {float} fee
      */
-    constructor(takerFee, makerFee) {
-        this._takerFee = takerFee
-        this._makerFee = makerFee
+    static set makerFee(fee)
+    {
+        Broker._makerFee = fee
     }
 
+    /**
+     * Set taker fee.
+     * @param {float} fee
+     */
+    static set takerFee(fee)
+    {
+        Broker._takerFee = fee
+    }
 
     /**
      * Fee on open.
      * @returns {float}
      */
-    get makerFee()
+    static get makerFee()
     {
-        return this._makerFee
+        return Broker._makerFee
     }
 
     /**
      * Fee on close.
      * @returns {float}
      */
-    get takerFee()
+    static get takerFee()
     {
-        return this._takerFee
+        return Broker._takerFee
     }
 
     /**
      * Update state from broker.
      * @param {function} callback
      */
-    update(callback)
+    static update(callback)
     {
         axios({
             url: "https://api-pub.bitfinex.com/v2/ticker/tBTCUSD",
             method: "GET"
         }).then(response => {
-            this._price = response.data[6]
-            this._bidSize = response.data[1]
-            this._askSize = response.data[3]
+            Broker._price = response.data[6]
+            Broker._bidSize = response.data[1]
+            Broker._askSize = response.data[3]
             callback(
-                this._price,
-                this._bidSize,
-                this._askSize,
-                this._makerFee,
-                this._takerFee
+                Broker._price,
+                Broker._bidSize,
+                Broker._askSize
             )
         });
     }
@@ -61,7 +66,7 @@ class Broker
      */
     get makerCourse()
     {
-        return this._price * (1 + this._price * this._makerFee)
+        return Broker._price * (1 + this._price * Broker._makerFee)
     }
 
     /**
@@ -70,7 +75,7 @@ class Broker
      */
     get takerCourse()
     {
-        return this._price * (1 + this._price * this._takerFee)
+        return Broker._price * (1 + this._price * Broker._takerFee)
     }
 
     /**
@@ -79,7 +84,7 @@ class Broker
      */
     get course()
     {
-        return this._price
+        return Broker._price
     }
 
 }

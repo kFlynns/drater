@@ -1,7 +1,9 @@
-const OrderList = require('./orderList')
-const Purse = require('./purse')
-const moment = require("moment");
-const crypto = require('crypto')
+const OrderList = require("./orderList")
+const Purse = require("./purse")
+const moment = require("moment")
+const crypto = require("crypto")
+const Db = require("./db")
+const Broker = require("./broker")
 
 class Order
 {
@@ -13,7 +15,7 @@ class Order
      * @param {int} type
      */
     constructor(price, amount, type) {
-        this._time = moment(Date.now()).format("DD.MM.YYYY HH:mm")
+        this._time = moment(Date.now()).format("YYYY-MM-DD HH:mm:ss")
         this._openPrice = price
         this._amount = amount
         this._value = price * amount
@@ -26,10 +28,55 @@ class Order
         this._id = crypto
             .randomBytes(4)
             .toString('hex')
+        this.updateDatabase()
         Purse.spend(this._value)
         console.log(`Opened new ${type === Order.TYPE_LONG ? 'long' : 'short'} order ${this._id} at ${price}...`)
-        OrderList.add(this)
+
     }
+
+
+
+    updateDatabase()
+    {
+        Db.getConnection(async connection => {
+            try {
+                connection.beginTransaction().then(async () => {
+
+                    connection.query(`INSERT INTO trades (
+                        amount,
+                        maker_fee,
+                        taker_fee,
+                        open_course,
+                        open_time,
+                        type)
+                    VALUES (?, ?, ?, ?, ?, ?)`, [
+                        this._amount,
+                        Broker.makerFee,
+                        Broker.takerFee,
+                        this._openPrice,
+                        this._time,
+                        this._type === Order.TYPE_SHORT ? 'SHORT' : 'LONG'
+                    ])
+
+                    connection.query("UPDATE balances SET amount = amount - ? WHERE asset = 'USD' AND type = 'trade'", [
+                        this._openValue
+                    ])
+
+                    await connection.commit()
+                    OrderList.add(this)
+
+                })
+            } catch (err) {
+                console.log(err)
+                await connection.rollback()
+            }
+
+
+        })
+    }
+
+
+
 
     /**
      * Update order by actual course, return false if order get closed.
