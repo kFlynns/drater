@@ -1,4 +1,5 @@
 module.exports = {
+    taxRate: 25.0,
     startBalance: 10000.0,
     broker: {
         fees: {

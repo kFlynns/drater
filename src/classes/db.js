@@ -31,7 +31,7 @@ class Db
      */
     constructor(host, user, password, database)
     {
-        this._db =  mariadb.createPool({
+        this._db = mariadb.createPool({
             host: host,
             user: user,
             password: password,
@@ -97,7 +97,7 @@ class Db
             connection.end()
 
         })
-        
+
     }
 
 
