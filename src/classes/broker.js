@@ -9,7 +9,7 @@ class Broker
      */
     static set makerFee(fee)
     {
-        Broker._makerFee = fee
+        Broker._makerFee = fee / 100
     }
 
     /**
@@ -18,7 +18,7 @@ class Broker
      */
     static set takerFee(fee)
     {
-        Broker._takerFee = fee
+        Broker._takerFee = fee / 100
     }
 
     /**
@@ -49,14 +49,8 @@ class Broker
             url: "https://api-pub.bitfinex.com/v2/ticker/tBTCUSD",
             method: "GET"
         }).then(response => {
-            Broker._price = response.data[6]
-            Broker._bidSize = response.data[1]
-            Broker._askSize = response.data[3]
-            callback(
-                Broker._price,
-                Broker._bidSize,
-                Broker._askSize
-            )
+            Broker._course = response.data[6]
+            callback()
         });
     }
 
@@ -64,27 +58,27 @@ class Broker
      * Get course including maker fee.
      * @returns {float}
      */
-    get makerCourse()
+    static get makerCourse()
     {
-        return Broker._price * (1 + this._price * Broker._makerFee)
+        return parseFloat(Broker.course + Broker.course * Broker._makerFee).toFixed(9)
     }
 
     /**
      * Get course including taker fee.
      * @returns {float}
      */
-    get takerCourse()
+    static get takerCourse()
     {
-        return Broker._price * (1 + this._price * Broker._takerFee)
+        return parseFloat(Broker.course + Broker.course * Broker._takerFee).toFixed(9)
     }
 
     /**
      * Get course without fees.
      * @returns {float}
      */
-    get course()
+    static get course()
     {
-        return Broker._price
+        return parseFloat(Broker._course).toFixed(9)
     }
 
 }

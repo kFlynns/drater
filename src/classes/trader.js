@@ -1,21 +1,18 @@
-const OrderList = require("./orderList")
-const Order = require("./order")
-const Purse = require("./purse")
-
+const Bank = require("./bank")
+const Broker = require("./broker")
 
 class Trader
 {
 
     /**
      * Calculate momentum of course movement
-     * @param {float} price
-     * @returns {number}
+     * @returns {float}
      */
-    static calculateMomentum(price)
+    static calculateMomentum()
     {
 
         let history = Trader._priceHistory
-        history.push(price)
+        history.push(Broker.course)
 
         if (history.length === 6)
         {
@@ -48,30 +45,29 @@ class Trader
             lastDirection = direction
 
         }
-        return 100 / price * momentum
+        return 100 / Broker.course * momentum
 
     }
 
 
     /**
      * open new order
-     * @param {float} price
      * @param {float} amount
      * @param {int} type
      * @param {float} tp
      * @param {float} sl
      */
-    static openOrder(price, amount, type, tp, sl)
+    static openOrder(amount, type, tp, sl)
     {
+        console.log(amount)
         // more money in purse -> higher risk
-        let purseFactor = Purse.balanceUsd / 10000
-        let order = new Order(
-            price,
-            amount * purseFactor,
-            type
+        let purseFactor = 1//Purse.balanceUsd / 10000 todo
+        Bank.openOrder(
+            amount,
+            type,
+            tp,
+            sl
         )
-        order.tp = tp
-        order.sl = sl
         Trader._priceHistory = []
 
     }
@@ -79,15 +75,11 @@ class Trader
 
     /**
      * Main method for trading.
-     * @param {float} price
-     * @param {float} bidSize
-     * @param {float} askSize
      */
-    static trade(price, bidSize, askSize)
+    static trade()
     {
 
-        OrderList.update(price)
-        let momentum = Trader.calculateMomentum(price)
+        let momentum = Trader.calculateMomentum()
 
         // use a moderate momentum as trigger
         if (Math.abs(momentum) >= 0.02 && Math.abs(momentum) <= 0.1)
@@ -96,21 +88,19 @@ class Trader
             {
                 // momentum points in short, open buy order
                 Trader.openOrder(
-                    price,
                     momentum / 10 * -1,
-                    Order.TYPE_LONG,
-                    price * (1 + momentum * -1 / 50),
+                    Bank.ORDER_TYPE_LONG,
+                    Broker.takerCourse * (1 + momentum * -1 / 50),
                     false // we're bullish in btc, so no sl for long positions
                 )
                 return
             }
             // open sell order
             Trader.openOrder(
-                price,
                 momentum / 10,
-                Order.TYPE_SHORT,
-                price * (1 + momentum * -1 / 100),
-                price * (1 - (momentum * -10) / 100) // risk ten times the reward
+                Bank.ORDER_TYPE_SHORT,
+                Broker.makerCourse * (1 + momentum * -1 / 100),
+                Broker.makerCourse * (1 - (momentum * -10) / 100) // risk ten times the reward
             )
         }
     }

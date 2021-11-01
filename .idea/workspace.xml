@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f7584c35-fdad-4a57-aa35-9d87fafab2cb" name="Default Changelist" comment="" />
+    <list default="true" id="f7584c35-fdad-4a57-aa35-9d87fafab2cb" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/classes/bank.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classes/broker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/classes/broker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classes/db.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/classes/db.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classes/order.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/classes/order.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classes/orderList.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classes/purse.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classes/trader.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/classes/trader.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -19,6 +29,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="mariadb" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -34,6 +45,8 @@
       <option name="presentableId" value="Default" />
       <updated>1635183558384</updated>
       <workItem from="1635183559510" duration="612000" />
+      <workItem from="1635788709771" duration="3097000" />
+      <workItem from="1635791845307" duration="4626000" />
     </task>
     <servers />
   </component>

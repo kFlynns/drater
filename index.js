@@ -11,19 +11,12 @@
  *      - linear increase / decrease (rally / crash)
  */
 
+const Bank = require('./src/classes/bank')
 const Broker = require('./src/classes/broker')
 const Trader = require('./src/classes/trader')
-const OrderList = require('./src/classes/orderList')
-const Purse = require('./src/classes/purse')
 const Express = require('express')
 const App = Express()
 const Config = require('./src/modules/config')
-
-
-/**
- * Set initial balance.
- */
-Purse.balanceUsd = Config.startBalance;
 
 /**
  * Bitfinex Broker inc. fees.
@@ -31,12 +24,14 @@ Purse.balanceUsd = Config.startBalance;
 Broker.makerFee = Config.broker.fees.maker
 Broker.takerFee = Config.broker.fees.taker
 
-
 /**
  * Main thread.
  */
 const trade = () => {
-    Broker.update(Trader.trade)
+    Broker.update(() => {
+        Trader.trade()
+        Bank.update()
+    })
 }
 setInterval(trade, 2500)
 
@@ -59,10 +54,6 @@ App.get('/info', (req, res) => {
     })
 })
 
-
-App.get('/history', (req, res) => {
-    res.json(OrderList.history)
-})
 
 App.set('view engine', 'pug')
 App.use(Express.static('public'))

@@ -36,10 +36,10 @@ class Db
             user: user,
             password: password,
             database: database,
-            connectionLimit: 5
+            connectionLimit: 15
         })
         // todo: switch argument to make this optional
-        this.initialize()
+        //this.initialize()
     }
 
     /**
@@ -51,9 +51,9 @@ class Db
 
             try {
                 connection.beginTransaction().then(async () => {
-                    connection.query("DROP TABLE `trades`");
-                    connection.query("DROP TABLE `balances`");
-                    connection.query(`
+                    await connection.query("DROP TABLE IF EXISTS `trades`");
+                    await connection.query("DROP TABLE IF EXISTS `balances`");
+                    await connection.query(`
                         CREATE TABLE IF NOT EXISTS trades
                         (
                             trade_id     INT PRIMARY KEY AUTO_INCREMENT,
@@ -62,12 +62,14 @@ class Db
                             taker_fee    DECIMAL(5, 2)  DEFAULT NULL,
                             open_course  DECIMAL(18, 9) NOT NULL,
                             close_course DECIMAL(18, 9) DEFAULT NULL,
+                            take_profit  DECIMAL(18, 9) DEFAULT NULL,
+                            stop_loss    DECIMAL(18, 9) DEFAULT NULL,
                             open_time    DATETIME       NOT NULL,
                             close_time   DATETIME       DEFAULT NULL,
                             type         VARCHAR(31)    NOT NULL
                         )
                     `)
-                    connection.query(`
+                    await connection.query(`
                         CREATE TABLE IF NOT EXISTS balances
                         (
                             asset  VARCHAR(127)   NOT NULL,
@@ -76,7 +78,7 @@ class Db
                             PRIMARY KEY (asset, type)
                         )
                     `)
-                    connection.batch(
+                    await connection.batch(
                         "INSERT INTO `balances` (`asset`, `type`, `amount`) VALUES ('usd', ?, ?)", [[
                             'trade',
                             Config.startBalance
@@ -99,8 +101,6 @@ class Db
         })
 
     }
-
-
 
     /**
      * Get a connection that will be sent to callback.
