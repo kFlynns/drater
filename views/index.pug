@@ -3,20 +3,64 @@ html(lang='de')
     head
         title= "Darth Trader"
         meta(charset="UTF-8")
-        script(src='/jQuery.js')
-        script(src='/drater.js')
+        script(src='/jquery.js')
+        script(src='/darth_trader.js?v=3')
         link(rel='stylesheet', type="text/css", href="/bootstrap.css")
-    body(class="p-4")
+        link(rel='stylesheet', type="text/css", href="/font.css")
+        link(rel='stylesheet', type="text/css", href="/darth_trader.css")
+    body(class="p-2 p-lg-4")
         h1= "Darth Trader"
-        div(class="p-4")
-            div(id="div-open")
-            div(id="div-value")
+        div(class="row pt-4")
+            div(class="col-6")
+                h5= "Meta"
+                table(class="table")
+                    tr
+                        th(scope="row", style="width: 160px")= "course"
+                        td(id="td-course", style="width: 140px", class="text-right")
+                        td= "$ / BTC"
+                    tr
+                        th(scope="row", style="width: 160px")= "start balance"
+                        td(id="td-start-balance", style="width: 140px", class="text-right")
+                        td= "$"
+                    tr
+                        th(scope="row")= "actual balance"
+                        td(id="td-balance", class="text-right")
+                        td= "$"
+                    tr
+                        th(scope="row")= "+ open"
+                        td(id="td-value", class="text-right")
+                        td= "$"
+                    tr
+                        th(scope="row")= "= summary"
+                        td(id="td-summary", class="text-right")
+                        td= "$"
+                    tr
+                        th(scope="row")= "= change"
+                        td(id="td-change", class="text-right")
+                        td= "%"
+            div(class="col-6")
+                h5= "Latest Closes"
+                table(id="tbl-history", class="table")
+                    thead
+                        tr
+                            th(scope="column")= "id"
+                            th(scope="column")= "type"
+                            th(scope="column", class="text-right")= "profit"
+                    tbody
+
+
+        h4(class="pt-4")= "Order List"
         table(id="tbl-orders", class="table")
             thead
                 tr
+                    th(scope="column")= "id"
                     th(scope="column")= "time"
+                    th(scope="column")= "type"
+                    th(scope="column", class="text-right")= "price"
+                    th(scope="column", class="text-right")= "tp"
+                    th(scope="column", class="text-right")= "sl"
+                    th(scope="column", class="text-right")= "amount"
                     th(scope="column", class="text-right")= "open"
                     th(scope="column", class="text-right")= "value"
                     th(scope="column", class="text-right")= "change"
-                    th(scope="column")= "closed"
             tbody

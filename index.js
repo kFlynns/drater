@@ -1,143 +1,69 @@
-"use strict"
-
-const moment = require('moment')
-const axios = require('axios')
-const express = require('express')
-const app = express()
-
-// step that will be used to buy in
-const orderThreshold = 1.0
-
-// factor an bid ask delta to create position size
-const positionSizeFactor = 0.001
-
-
 /**
- * exchange data
- * @type {{
- *   price: number,
- *   bidSize: number,
- *   delta: number,
- *   orders: *[],
- *   askSize: number,
- *   lastDelta: number
- * }}
+ * todo:
+ *  - calculate risk to evaluate needed capital (max draw down 70 %)
+ *  - convert reward to gross reward
+ *      - tax 25 % on reward (germany)
+ *   - fees (Bitfinex)
+ *      - open 0.1 %
+ *      - close 0.2 %
+ *  - simulate events for testing
+ *      - noise (extreme volatility)
+ *      - linear increase / decrease (rally / crash)
  */
-let exchange = {
-    price: 0.0,
-    bidSize: 0.0,
-    askSize: 0.0,
-    lastDelta: 0.0,
-    delta: 0.0,
-    orders: []
-}
 
+const Broker = require('./src/classes/broker')
+const Trader = require('./src/classes/trader')
+const OrderList = require('./src/classes/orderList')
+const Purse = require('./src/classes/purse')
+const Express = require('express')
+const App = Express()
+const Config = require('./src/modules/config')
 
 
 /**
- * create new orders
- * @param price
- * @param amount
- * @returns {{update: (function(*): {profit: number|*, value}), close: close}}
+ * Set initial balance.
  */
-let orderFactory = (price, amount) => {
-    let closed = false
-    let date = moment(Date.now()).format('DD.MM.YYYY HH:mm:ss')
-    return {
-        update: () => {
-            return {
-                date: date,
-                open: price * amount,
-                value: exchange.price * amount,
-                closed: closed,
-                percent: (100 - 100 / ((price * amount) / (exchange.price * amount))) *-1
-            }
-        },
-        close: () => {
-            closed = true
-        }
-    }
-}
-
+Purse.balanceUsd = Config.startBalance;
 
 /**
- *
- * @type {{print: (function(): void), update: purse.update}}
+ * Bitfinex Broker inc. fees.
  */
-let purse = (function () {
-    let value = 0.0;
-    let open = 0.0;
-    return {
-        print: () => {
-            return {
-                value: value,
-                open: open
-            }
-        },
-        update: () => {
-            value = 0.0
-            open = 0.0
-            exchange.orders = exchange.orders.filter(order => {
-                let state = order.update()
-                value += state.value
-                open += state.open
-                return true // close orders at TP?
-            })
-        }
-    }
-})();
-
+Broker.makerFee = Config.broker.fees.maker
+Broker.takerFee = Config.broker.fees.taker
 
 
 /**
- *
+ * Main thread.
  */
 const trade = () => {
-    axios({
-        url: "https://api-pub.bitfinex.com/v2/ticker/tBTCUSD",
-        method: "GET"
-    }).then(response => {
-
-        exchange.price = response.data[6]
-        exchange.bidSize = response.data[1]
-        exchange.askSize = response.data[3]
-        exchange.delta = exchange.bidSize - exchange.askSize
-
-        if (exchange.delta - exchange.lastDelta > orderThreshold)
-        {
-            let positionSize = exchange.delta * positionSizeFactor
-            exchange.lastDelta = exchange.delta
-            exchange.orders.push(orderFactory(
-                exchange.price,
-                positionSize
-            ))
-            console.log(`New order on ${exchange.price} ...`)
-        }
-        purse.update(exchange.price)
-    })
+    Broker.update(Trader.trade)
 }
-
-setInterval(trade, 5000)
-trade()
+setInterval(trade, 2500)
 
 
 
-app.get('/', (req, res) => {
+App.get('/', (req, res) => {
     res.render('index')
 })
 
-app.post('/purse', (req, res) => {
-    res.json(purse.print())
-})
-
-app.post('/orders', (req, res) => {
-    let result = []
-    exchange.orders.forEach(order => {
-        result.push(order.update())
+App.get('/info', (req, res) => {
+    let value = OrderList.value
+    res.json({
+        course: Broker.course,
+        startBalance: startBalance,
+        balanceUsd: Purse.balanceUsd,
+        orders: OrderList.search(),
+        averagePrice: OrderList.averagePrice,
+        value: value,
+        change: (100 - (100 / startBalance * (Purse.balanceUsd + value))) * -1
     })
-    res.json(result)
 })
 
-app.set('view engine', 'pug')
-app.use(express.static('public'))
-app.listen(8080)
+
+App.get('/history', (req, res) => {
+    res.json(OrderList.history)
+})
+
+App.set('view engine', 'pug')
+App.use(Express.static('public'))
+App.listen(8080)
