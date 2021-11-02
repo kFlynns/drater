@@ -9,7 +9,7 @@ class Broker
      */
     static set makerFee(fee)
     {
-        Broker._makerFee = fee / 100
+        Broker._makerFee = fee
     }
 
     /**
@@ -18,7 +18,7 @@ class Broker
      */
     static set takerFee(fee)
     {
-        Broker._takerFee = fee / 100
+        Broker._takerFee = fee
     }
 
     /**
@@ -60,16 +60,16 @@ class Broker
      */
     static get makerCourse()
     {
-        return parseFloat(Broker.course + Broker.course * Broker._makerFee).toFixed(9)
+        return Broker.course + Broker.course * (Broker._makerFee / 100)
     }
 
     /**
-     * Get course including taker fee.
+     * Get course excluding taker fee.
      * @returns {float}
      */
     static get takerCourse()
     {
-        return parseFloat(Broker.course + Broker.course * Broker._takerFee).toFixed(9)
+        return Broker.course - Broker.course * (Broker._takerFee / 100)
     }
 
     /**
@@ -78,7 +78,7 @@ class Broker
      */
     static get course()
     {
-        return parseFloat(Broker._course).toFixed(9)
+        return Broker._course
     }
 
 }

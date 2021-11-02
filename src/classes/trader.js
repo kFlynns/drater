@@ -63,7 +63,7 @@ class Trader
         // more money in purse -> higher risk
         let purseFactor = 1//Purse.balanceUsd / 10000 todo
         Bank.openOrder(
-            amount,
+            amount * purseFactor,
             type,
             tp,
             sl
@@ -90,18 +90,21 @@ class Trader
                 Trader.openOrder(
                     momentum / 10 * -1,
                     Bank.ORDER_TYPE_LONG,
-                    Broker.takerCourse * (1 + momentum * -1 / 50),
+                    1 + momentum * -1 / 50,
                     false // we're bullish in btc, so no sl for long positions
                 )
-                return
+                //return
             }
             // open sell order
+            /*
             Trader.openOrder(
                 momentum / 10,
                 Bank.ORDER_TYPE_SHORT,
                 Broker.makerCourse * (1 + momentum * -1 / 100),
                 Broker.makerCourse * (1 - (momentum * -10) / 100) // risk ten times the reward
             )
+            */
+
         }
     }
 }

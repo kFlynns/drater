@@ -39,7 +39,7 @@ class Db
             connectionLimit: 15
         })
         // todo: switch argument to make this optional
-        //this.initialize()
+        this.initialize()
     }
 
     /**
@@ -56,17 +56,18 @@ class Db
                     await connection.query(`
                         CREATE TABLE IF NOT EXISTS trades
                         (
-                            trade_id     INT PRIMARY KEY AUTO_INCREMENT,
-                            amount       DECIMAL(18, 9) NOT NULL,
-                            maker_fee    DECIMAL(5, 2)  DEFAULT NULL,
-                            taker_fee    DECIMAL(5, 2)  DEFAULT NULL,
-                            open_course  DECIMAL(18, 9) NOT NULL,
-                            close_course DECIMAL(18, 9) DEFAULT NULL,
-                            take_profit  DECIMAL(18, 9) DEFAULT NULL,
-                            stop_loss    DECIMAL(18, 9) DEFAULT NULL,
-                            open_time    DATETIME       NOT NULL,
-                            close_time   DATETIME       DEFAULT NULL,
-                            type         VARCHAR(31)    NOT NULL
+                            trade_id      INT PRIMARY KEY AUTO_INCREMENT,
+                            amount        DECIMAL(18, 9) NOT NULL,
+                            maker_fee     DECIMAL(5, 2)  DEFAULT NULL,
+                            taker_fee     DECIMAL(5, 2)  DEFAULT NULL,
+                            market_course DECIMAL(18, 9) NOT NULL,
+                            open_course   DECIMAL(18, 9) NOT NULL,
+                            close_course  DECIMAL(18, 9) DEFAULT NULL,
+                            take_profit   DECIMAL(18, 9) DEFAULT NULL,
+                            stop_loss     DECIMAL(18, 9) DEFAULT NULL,
+                            open_time     DATETIME       NOT NULL,
+                            close_time    DATETIME       DEFAULT NULL,
+                            type          VARCHAR(31)    NOT NULL
                         )
                     `)
                     await connection.query(`
@@ -79,11 +80,17 @@ class Db
                         )
                     `)
                     await connection.batch(
-                        "INSERT INTO `balances` (`asset`, `type`, `amount`) VALUES ('usd', ?, ?)", [[
+                        "INSERT INTO `balances` (`asset`, `type`, `amount`) VALUES (?, ?, ?)", [[
+                            'USD',
                             'trade',
                             Config.startBalance
                         ], [
+                            'USD',
                             'tax',
+                            0.0
+                        ], [
+                            'BTC',
+                            'trade',
                             0.0
                         ]]
                     )

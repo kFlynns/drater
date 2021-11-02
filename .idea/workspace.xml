@@ -2,14 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f7584c35-fdad-4a57-aa35-9d87fafab2cb" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/classes/bank.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/classes/bank.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/classes/bank.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/classes/broker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/classes/broker.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/classes/db.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/classes/db.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/classes/order.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/classes/order.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/classes/orderList.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/classes/purse.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/classes/trader.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/classes/trader.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,6 +20,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="200ZeIunTsSzcMpjwaHkax3KhJS" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
